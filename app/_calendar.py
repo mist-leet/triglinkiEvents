@@ -7,6 +7,7 @@ import recurring_ical_events
 import requests
 from icalendar import Calendar
 
+import pytz
 
 @dataclass
 class Event:
@@ -78,6 +79,13 @@ class Event:
 
 class CalendarRequestController:
 
+    @staticmethod
+    def utc_to_local(utc_dt):
+        local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(CalendarRequestController.local_tz)
+        return CalendarRequestController.local_tz.normalize(local_dt)
+
+    local_tz = pytz.timezone('Europe/Moscow')
+
     def __init__(self, url):
         self.url = url
 
@@ -131,9 +139,9 @@ class CalendarRequestController:
     def create_from_cal_component(self, component):
         return Event(
             name=component.get('summary'),
-            dtstart=component.get('dtstart').dt,
-            dtend=component.get('dtend').dt,
-            dtstamp=component.get('dtstamp').dt,
+            dtstart=CalendarRequestController.utc_to_local(component.get('dtstart').dt),
+            dtend=CalendarRequestController.utc_to_local(component.get('dtend').dt),
+            dtstamp=CalendarRequestController.utc_to_local(component.get('dtstamp').dt),
             text=component.get('description'),
             rule=component.get('rrule'),
             picture=component.get('attach')
