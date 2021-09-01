@@ -1,13 +1,27 @@
+html {
+    background: #effaf5;
+}
+
 #event_thread {
-    padding: 100px;
+    padding: 1.5rem 1.5rem 1.5rem 1.5rem;
 }
 
 .text-content {
     white-space: pre-line;
+    padding-top: 7px;
 }
 
 .card_image {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
+}
+
+.in_card_content {
+    padding-top: 5px;
+    text-align: center;
+}
+
+.card_title {
+    text-align: center;
 }
