@@ -10,7 +10,7 @@ from aiohttp import web
 class Server:
     def __init__(self):
         self.local_tz = pytz.timezone('Europe/Moscow')
-        self.calendarRequestController = CalendarRequestController('https://calendar.google.com/calendar/ical/aa9qmdt1cg9jvsd0dmd5kle35o%40group.calendar.google.com/private-57afca02e9086d2372b977f0180c8edc/basic.ics')
+        self.calendarRequestController = CalendarRequestController('https://calendar.google.com/calendar/ical/unng0onmro6g0oieukkpp6mvd0%40group.calendar.google.com/private-246f64586415b7bb871af8af91f94ff3/basic.ics')
 
     async def get_events(self, request):
         print(request)

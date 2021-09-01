@@ -28,9 +28,9 @@ class Event:
                 year=self.dtstart.year or 1970,
                 month=self.dtstart.month or 1,
                 day=self.dtstart.day or 1,
-                hour=10,
-                minute=0,
-                second=0
+                hour=self.dtstart.time().hour,
+                minute=self.dtstart.time().minute,
+                second=self.dtstart.time().second
             )
         else:
             self.dtstart = datetime(
@@ -47,9 +47,9 @@ class Event:
                 year=self.dtend.year or 1970,
                 month=self.dtend.month or 1,
                 day=self.dtend.day or 1,
-                hour=22,
-                minute=0,
-                second=0
+                hour=self.dtend.time().hour,
+                minute=self.dtend.time().minute,
+                second=self.dtend.time().second
             )
         else:
             self.dtend = datetime(
