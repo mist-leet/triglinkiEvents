@@ -71,7 +71,7 @@ eventCardUpdater = {
     },
 
     formatDateToTime: function (d) {
-        return d.getHours() + ":" + (d.getMinutes() + "0").slice(-2);
+        return d.getHours() + ":" + (d.getMinutes() + "0").slice(0, 2);
     }
 }
 $( document ).ready(function() {

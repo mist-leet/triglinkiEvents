@@ -3,11 +3,13 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, date
 from typing import List
 
+import icalendar
 import recurring_ical_events
 import requests
 from icalendar import Calendar
 
 import pytz
+
 
 @dataclass
 class Event:
@@ -66,7 +68,7 @@ class Event:
         # to
         # https://drive.google.com/u/0/uc?id=1uBcwqgV1h7W2WMctN6aZMzVFhFidvD_5&export=download
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'name': self.name,
             'dtstart': str(self.dtstart),
@@ -77,12 +79,16 @@ class Event:
             'picture': self.picture,
         }
 
+
 class CalendarRequestController:
 
     @staticmethod
-    def utc_to_local(utc_dt):
-        local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(CalendarRequestController.local_tz)
-        return CalendarRequestController.local_tz.normalize(local_dt)
+    def utc_to_local(utc_dt: datetime) -> datetime:
+        if utc_dt.tzinfo.zone != 'Europe/Moscow':
+            local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(CalendarRequestController.local_tz)
+            return CalendarRequestController.local_tz.normalize(local_dt)
+        else:
+            return utc_dt
 
     local_tz = pytz.timezone('Europe/Moscow')
 
@@ -118,25 +124,7 @@ class CalendarRequestController:
                 print(e)
         return in_range[:3]
 
-    def _process_rule(self, data: List[Event]):
-        processed = []
-        for event in data:
-            if event.rule and 'WEEKLY' in event.rule.get('freq'):
-                processed.append(
-                    Event(
-                        name=event.name,
-                        dtstart=event.dtstart + timedelta(days=7),
-                        dtend=event.dtend + timedelta(days=7),
-                        dtstamp=event.dtstamp,
-                        text=event.text,
-                        rule=event.rule,
-                        picture=event.picture
-                    )
-                )
-        return processed
-        ...
-
-    def create_from_cal_component(self, component):
+    def create_from_cal_component(self, component: icalendar.Event) -> Event:
         return Event(
             name=component.get('summary'),
             dtstart=CalendarRequestController.utc_to_local(component.get('dtstart').dt),
@@ -146,19 +134,3 @@ class CalendarRequestController:
             rule=component.get('rrule'),
             picture=component.get('attach')
         )
-    #
-    #
-    # def _create_sequence_of_events(self, event: Event) -> List[Event]:
-    #
-
-
-# local_tz = pytz.timezone('Europe/Moscow')
-#
-# current_time = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
-#
-# r = CalendarRequestController('https://calendar.google.com/calendar/ical/artemov.ilya.r%40gmail.com/public/basic.ics')
-# pprint(
-#     r.get_data(
-#         current_time - timedelta(days=3), current_time + timedelta(days=3)
-#     )
-# )

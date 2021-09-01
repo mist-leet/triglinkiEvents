@@ -10,11 +10,13 @@ from aiohttp import web
 class Server:
     def __init__(self):
         self.local_tz = pytz.timezone('Europe/Moscow')
-        self.calendarRequestController = CalendarRequestController('https://calendar.google.com/calendar/ical/unng0onmro6g0oieukkpp6mvd0%40group.calendar.google.com/private-246f64586415b7bb871af8af91f94ff3/basic.ics')
+        self.calendarRequestController = CalendarRequestController(
+            'https://calendar.google.com/calendar/ical/unng0onmro6g0oieukkpp6mvd0%40group.calendar.google.com/private-246f64586415b7bb871af8af91f94ff3/basic.ics'
+            )
 
     async def get_events(self, request):
         print(request)
-        current_time = datetime.now()#.replace(tzinfo=pytz.utc).astimezone(self.local_tz)
+        current_time = datetime.now()  # .replace(tzinfo=pytz.utc).astimezone(self.local_tz)
         start_date = datetime(
             year=current_time.year,
             month=current_time.month,
@@ -49,6 +51,7 @@ class Server:
         app.add_routes([web.get('/get_events', self.get_events)])
         web.run_app(app)
         return app
+
 
 server = Server()
 server.start()
