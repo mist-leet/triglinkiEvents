@@ -51,7 +51,7 @@ eventCardUpdater = {
         title.text(data.name);
 
         let content = card_content.find('.content');
-        content.contents()[0].data = data.text;
+        content.find('.text-content').text(data.text);
 
         let timeDate = content.find('.date');
         let timeStart = content.find('.start');
