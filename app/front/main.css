@@ -1,9 +1,14 @@
 html {
     background: #effaf5;
+    overflow: hidden;
 }
 
 #event_thread {
     padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+    overflow: auto;
+    white-space: nowrap;
+    overflow: hidden;
+
 }
 
 .text-content {
@@ -24,4 +29,12 @@ html {
 
 .card_title {
     text-align: center;
+}
+
+.date {
+    text-align: center;
+}
+
+.event {
+    min-width: 500px;
 }

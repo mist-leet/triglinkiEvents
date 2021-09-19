@@ -25,9 +25,9 @@ class Server:
             minute=0
         )
         end_date = datetime(
-            year=(current_time + timedelta(days=7)).year,
-            month=(current_time + timedelta(days=7)).month,
-            day=(current_time + timedelta(days=7)).day,
+            year=(current_time + timedelta(days=21)).year,
+            month=(current_time + timedelta(days=21)).month,
+            day=(current_time + timedelta(days=21)).day,
             hour=0,
             minute=0
         )

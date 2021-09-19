@@ -122,7 +122,7 @@ class CalendarRequestController:
                     in_range.append(event)
             except Exception as e:
                 print(e)
-        return in_range[:3]
+        return in_range
 
     def create_from_cal_component(self, component: icalendar.Event) -> Event:
         return Event(
