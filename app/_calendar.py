@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date
-from typing import List
+from typing import List, Optional
 
 import icalendar
 import recurring_ical_events
@@ -21,7 +21,13 @@ class Event:
     rule: str
     picture: str
 
+    is_donation: Optional[bool] = None
+    price: Optional[int] = None
+    skip: Optional[bool] = None
+
     def __post_init__(self):
+        self.process_additional_fields()
+
         if self.picture and self.picture.startswith('https://drive.google.com/file/d/'):
             regex = re.compile('https:\/\/drive\.google\.com\/file\/d\/(.+)\/')
             self.picture = f"https://drive.google.com/u/0/uc?id={regex.match(self.picture).group(1)}&export=download"
@@ -68,6 +74,39 @@ class Event:
         # to
         # https://drive.google.com/u/0/uc?id=1uBcwqgV1h7W2WMctN6aZMzVFhFidvD_5&export=download
 
+    regexs = {
+        'skip': '#ignore',
+        'price': '#price_(\d+)',
+        'is_donation': '#donation'
+    }
+
+    def process_additional_fields(self):
+        self.text = re.sub('<br>|<\/br>|<p>|<\/p>', '', self.text)
+
+        for key, regex in self.regexs.items():
+            if key == 'skip':
+                matches = re.compile(regex).findall(self.text)
+                if any(matches):
+                    self.text = re.sub(regex, '', self.text)
+                    self.skip = True
+                else:
+                    self.skip = False
+            if key == 'price':
+                matches = re.compile(regex).findall(self.text)
+                if any(matches):
+                    self.text = re.sub(regex, '', self.text)
+                    self.price = int(matches[0])
+                else:
+                    self.price = None
+            if key == 'is_donation':
+                matches = re.compile(regex).findall(self.text)
+                if any(matches):
+                    self.text = re.sub(regex, '', self.text)
+                    self.is_donation = True
+                else:
+                    self.is_donation = False
+
+
     def to_dict(self) -> dict:
         return {
             'name': self.name,
@@ -77,6 +116,8 @@ class Event:
             'text': self.text,
             'rule': self.rule,
             'picture': self.picture,
+            'price': self.price,
+            'is_donation': self.is_donation,
         }
 
 
@@ -100,13 +141,10 @@ class CalendarRequestController:
         response = requests.get(self.url)
         data = response.text
         gcal = Calendar.from_ical(data)
-        #
-        # for component in gcal.walk():
-        #     if component.name == "VEVENT" and not component.get('rrule'):
-        #         result.append(self.create_from_cal_component(component))
 
         for component in recurring_ical_events.of(gcal).between(dfrom, dto):
             if component.name == "VEVENT":
+                print('process event: ', component.get('summary'), component.get('description'))
                 result.append(self.create_from_cal_component(component))
 
         # result += self._process_rule(result)
@@ -118,7 +156,10 @@ class CalendarRequestController:
         in_range = []
         for event in result:
             try:
-                if event.dtstart > dfrom and event.dtend < dto:
+                if (
+                        event.dtstart > dfrom and event.dtend < dto and
+                        not event.skip
+                ):
                     in_range.append(event)
             except Exception as e:
                 print(e)

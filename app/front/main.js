@@ -58,6 +58,8 @@ eventCardUpdater = {
                             <time class="end"></time>
                         </strong>
                         <p class="text-content">
+                        <p class="tag is-primary is-medium tag-price"></p>
+                        <p class="tag is-warning is-medium tag-donation"></p>
                         </p>
                     </div>
                 </div>
@@ -87,6 +89,20 @@ eventCardUpdater = {
 
         let content = card_content.find('.content');
         content.find('.text-content').text(data.text);
+
+        let price = card_content.find('.tag-price');
+        if (data.price) {
+            price.text(data.price + '₽');
+        } else {
+            price.hide();
+        }
+
+        let donation = card_content.find('.tag-donation');
+        if (data.is_donation) {
+            donation.text('donation');
+        } else {
+            donation.hide();
+        }
 
         let timeDate = content.find('.date');
         let timeStart = content.find('.start');
@@ -140,7 +156,7 @@ animator = {
     animateCards: function () {
         console.log('animante!!!');
         let count = $('.event').length;
-        let time = count * 500;
+        let time = count * 20000;
         let max_scroll = $('#event_thread')[0].scrollWidth;
 
         setTimeout(this.animateCards.bind(this), time * 2);
