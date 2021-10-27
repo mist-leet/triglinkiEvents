@@ -29,8 +29,12 @@ class Event:
         self.process_additional_fields()
 
         if self.picture and self.picture.startswith('https://drive.google.com/file/d/'):
-            regex = re.compile('https:\/\/drive\.google\.com\/file\/d\/(.+)\/')
-            self.picture = f"https://drive.google.com/u/0/uc?id={regex.match(self.picture).group(1)}&export=download"
+            regex_1 = re.compile('https:\/\/drive\.google\.com\/file\/d\/(.+)\/')
+            regex_2 = re.compile('https:\/\/drive\.google\.com\/file\/d\/(.+)')
+            if regex_1.match(self.picture):
+                self.picture = f"https://drive.google.com/u/0/uc?id={regex_1.match(self.picture).group(1)}&export=download"
+            elif regex_2.match(self.picture):
+                    self.picture = f"https://drive.google.com/u/0/uc?id={regex_2.match(self.picture).group(1)}&export=download"
 
         if isinstance(self.dtstart, date):
             self.dtstart = datetime(
